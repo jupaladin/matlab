@@ -1,0 +1,61 @@
+%% Task C-Read input data from text file/write outputs to text file
+clear all
+clc
+
+
+%% Inputs
+fid = fopen('SE-BW.INP.txt');
+dummy1 = fgetl(fid); %this is this line:Initial data      NAME:ZHU XUEYI, LOCKER NUMBER:45
+dummy1 = fgetl(fid); %this is:100 b
+    dummy2 = textscan(dummy1,'%f');
+    b = dummy2{1,1}; % we convert cell to value
+dummy1 = fgetl(fid); %this is:6 h0
+    dummy3 = textscan(dummy1,'%f'); %we extract cell value
+    h0 = dummy3{1,1};
+dummy1 = fgetl(fid); %this is:2000 dx
+    dummy4 = textscan(dummy1,'%f'); %we extract cell value
+    dx = dummy4{1,1};
+dummy1 = fgetl(fid); %this is:500 Q
+    dummy5 = textscan(dummy1,'%f'); %we extract cell value
+    Q = dummy5{1,1};
+dummy1 = fgetl(fid); %this is:50 C
+    dummy6 = textscan(dummy1,'%f'); %we extract cell value
+    C = dummy6{1,1};
+dummy1 = fgetl(fid); %this is:0.0001 I 
+    dummy7 = textscan(dummy1,'%f'); %we extract cell value
+    I = dummy7{1,1};
+
+%% Outputs the matrix R
+fileout='SE-BW.OUT.txt';
+NAME='ZhuXueyi';
+Numlocker = [45];
+Numstudent = [54097];
+formatSpec = 'Assigment by %s ;Locker NO. %3.0f ;Student NO. %6.0f \n';
+fid = fopen(fileout,'w');
+fprintf(fid,formatSpec,NAME,Numlocker,Numstudent);
+%print the first line according to the formatspec
+a(1,:) = {['Points'],[' Distances'],['     Depths'],['   Geo_heights'],['Piezo_heights']};
+fprintf(fid,'%10s %10s %10s %10s %10s\n',a{1,:});
+%print the headers of each column in the second line
+j = 0;
+hj = h0;
+hN = (Q/(b*C*I^(1/2)))^(2/3);
+hG = zeros();%Initialize the Matrix of the geodetical height
+hp = zeros();%Initialize the Matrix of the piezometrical height
+while hj-hN>0.001
+ hj = (Q^2/(C^2*hj^3*b^2)-I)*dx+hj;
+ j = j+1;
+ A(j,1) = [j];%Points
+ X = dx*j;
+ A(j,2) = [X];%Distances
+ A(j,3) = [hj];%Depths
+ hG(j) = X*I;%Matrix of geodetical height(elevation of bottom level from 0 at the mouth up)
+ A(j,4) = [hG(j)];%Geo_heights
+ fprintf(fid,'%10.4f\t',A(j,1:4));% put each following number in Matrix A in the same row
+ hp(j) = hG(j)+hj ;%Matrix of the piezometrical height(geodetical height plus water depth)
+ A(j,5) = [hp(j)];%Piezo_heights
+ fprintf(fid,'%10.4f\n',A(j,5));% put each following number in Matrix A in a new row
+
+end
+
+
