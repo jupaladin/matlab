@@ -1,0 +1,25 @@
+function [t,Precip] = bradar(lat,long)
+
+br_url='http://gpsgadget.buienradar.nl/data/raintext?';
+resUrl=[br_url 'lat=' num2str(lat) '&lon=' num2str(long)];
+data=urlread(resUrl);
+
+%% read data
+D=textscan(data,'%d|%t')%time and string difference:time can calculate if i plus one hour
+%data=strsplit(str);seperate the data
+P=double(D{1});
+t=D{2}
+Precip=round(10.^((P-109)/32),2);
+%bar(t,Precip)
+
+f=bar(P)
+set(gca,'XTickLabel',t)
+
+end
+
+
+%c=datenum(time,'HH:MM')
+%bar(c,value)
+%datetick('x','HH:MM')
+%plot(time,intensity(mm/h))
+
