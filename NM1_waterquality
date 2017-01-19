@@ -1,0 +1,82 @@
+clear all
+clc
+
+T = 24;
+detT1 = 0.1;
+n1 = T/detT1;
+npoints = n1+1;
+A1(1) = 1;
+B1(1) = 4;
+T1(1)=0;
+k1 = 1;
+k2 = 2;
+for i = 2:1:npoints
+    A1(i) = A1(i-1)+detT1*(-k1*A1(i-1));
+    B1(i) = B1(i-1)+detT1*(k1*A1(i-1)-k2*B1(i-1));
+    T1(i) = T1(i-1)+detT1;
+end
+plot(T1,A1,'g','linewidth',1);
+title('Water quality problem');
+hold on;
+xlabel('Time(months)');
+ylabel('Pollution(g/l)');
+plot(T1,B1,'r','linewidth',1);
+legend('A','B')
+hold on; 
+
+detT2 = 0.6;
+n2 = T/detT2;
+npoints = n2+1;
+A2(1) = 1;
+B2(1) = 4;
+T2(1)=0;
+for i = 2:1:npoints
+    A2(i) = A2(i-1)+detT2*(-k1*A2(i-1));
+    B2(i) = B2(i-1)+detT2*(k1*A2(i-1)-k2*B2(i-1));
+    T2(i) = T2(i-1)+detT2;
+end
+plot(T2,A2,'g','linewidth',1);
+hold on; 
+plot(T2,B2,'r','linewidth',1);
+hold on; 
+
+detT3 = 0.8;
+n3 = T/detT3;
+npoints = n3+1;
+A3(1) = 1;
+B3(1) = 4;
+T3(1)=0;
+for i = 2:1:npoints
+    A3(i) = A3(i-1)+detT3*(-k1*A3(i-1));
+    B3(i) = B3(i-1)+detT3*(k1*A3(i-1)-k2*B3(i-1));
+    T3(i) = T3(i-1)+detT3;
+end
+plot(T3,A3,'g','linewidth',1);
+hold on; 
+plot(T3,B3,'r','linewidth',1);
+hold on; 
+
+%% analytical solution
+%k1~=k2
+detT=0.1;
+A4(1) = 1;
+B4(1) = 4;
+t(1)=0;
+for i=2:240
+A4(i) = A4(i-1)*exp(-k1*detT);
+B4(i) = k1/(k2-k1)*A4(i-1)*(exp(-k1*detT)-exp(-k2*detT))+B4(i-1)*exp(-k2*detT);
+t(i)= (i-1)*detT;
+end
+plot(t,A4,'k','linewidth',2);
+hold on; 
+plot(t,B4,'k','linewidth',2);
+
+%% Compare the numerical solutions with the analytical one.
+% Which shown in the figure is as following: 
+% The analytical one is always above the numerical one.
+% Through the numerical solutions,
+% A: The shapes of numerical and the analytical are quite similar with each
+% other.
+% B: The shape of numerical is oscilatory when detT is 0.6 and 0.8
+% but when detT is 0.1, both are also similar.
+ 
