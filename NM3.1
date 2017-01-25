@@ -1,0 +1,21 @@
+clear all
+clc
+
+A = 100;%m^2
+h(1) = 10;%m
+k = 0.01;%m^2
+t(1)=0
+detT = 10*60;%min
+time = 70000;%min
+m = time/detT;
+S(1)=A*h(1)
+for i =2:1:m 
+   h(i) = h(i-1)+detT*(-k/A*sqrt(h(i-1)));
+   S(i) = A*h(i);
+   t(i)=t(i-1)+detT;
+end
+
+
+plot(t,S);
+xlabel('time')
+ylabel('storage')
