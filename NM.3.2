@@ -1,0 +1,22 @@
+clear all
+clc
+
+A = 109;%m^2
+h(1) = 10;%m
+h(2)=h(1)
+k = 0.01;%m^2
+t(1)=0
+detT = 10*60;%min
+i=1
+R=15%m
+while h(i)>0
+    i=i+1;%count
+    r(i) = sqrt(R^2-(R-h(i))^2)
+    A(h(i)) = pi*r(i)^2;
+    h(i) = h(i-1)+detT*(I(n-1)-k*sqrt(h(i-1))-h(i-1)*(A(h(i-1))-A(h(i-2))))/detT  
+    t(i) = t(i-1)+detT/3600;
+end
+plot(t,h);
+xlabel('time(h)')
+ylabel('storage(m^3)')
+title('Reservoir capacity')
