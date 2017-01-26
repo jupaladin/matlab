@@ -1,0 +1,58 @@
+% Exercise of Mathematical Formulation of Fluid Flow Equations
+% EXERCISE 1 - De Saint Venant equations The diffusion coefficient
+
+
+clear all
+clc
+
+B1 = 5;%m
+B2 = 5;%m
+y1 = 4;%m
+n = 0.09;
+s = 0.001;%slope
+
+c1 = B1*y1;
+c2 = 2*B2+B1;
+c3 = B1+2*y1+2*B2;
+
+n_sample = 100;
+h = (0:1/n_sample:10)';
+A = zeros(n_sample,1);
+P = zeros(n_sample,1);
+R = zeros(n_sample,1);% hydraulic radius
+K = zeros(n_sample,1);
+
+%% Estimation of the diffusion coefficient
+
+
+for i = 1:length(h)
+    if h(i,1) <= y1
+        A(i,1) = B1*h(i,1);
+        P(i,1) = B1+2*h(i,1);
+        R(i,1) = A(i,1)/P(i,1);
+        K(i,1) = 1/n*A(i,1)*R(i,1)^(2/3);
+        Q(i,1) = K(i,1)*sqrt(s); %Discharge
+        detk(i,1) = -4/(3*n)*(B1*h(i,1)).^(5/3)/(B1+2*h(i,1)).^(5/3)+5/(3*n)*B1*(B1*h(i,1)).^(2/3)/(B1+2*h(i,1)).^(2/3);
+        c(i,1) = Q(i,1)/B1*(1/K(i,1)*detk(i,1)); %The coefficient of diffusion 
+    elseif h(i,1) > y1
+        A(i,1) = B1*y1+(2*B2+B1)*(h(i,1)-y1);
+        P(i,1) = B1+2*y1+2*B2+2*(h(i,1)-y1);
+        R(i,1) = A(i,1)/P(i,1);
+        K(i,1) = 1/n*A(i,1)*R(i,1)^(2/3);
+        Q(i,1) = K(i,1)*sqrt(s); %Discharge
+        detk(i,1) = -4/(3*n)*(c1+c2*(h(i,1)-y1)).^(5/3)/(c3+2*(h(i,1)-y1)).^(5/3)+5/(3*n)*c2*(c1+c2*(h(i,1)-y1)).^(2/3)/(c3+2*(h(i,1)-y1)).^(2/3);
+        c(i,1) = Q(i,1)/(B1+2*B2)*(1/K(i,1)*detk(i,1)); %The coefficient of diffusion 
+    end
+end
+
+
+%% Plot the results
+figure
+subplot(2,1,1)
+plot(h,detk)
+xlabel('height')
+ylabel('detk')
+subplot(2,1,2)
+plot(Q,c)
+xlabel('Discharge')
+ylabel('Coefficient of diffusion')
