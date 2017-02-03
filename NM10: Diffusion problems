@@ -1,0 +1,64 @@
+% Exercise 10: Diffusion problems
+clear all
+clc
+
+%-------------------- input data-------------------
+D=0.02;
+u=1;
+Ly=30;
+Lx=32;
+detX=1;
+detY=1;
+M=round(Lx/detX)+1; % M=33
+N=round(Ly/detY)+1; % N=31
+u=1;
+v=0; % not needed ,given for clarity
+Ttotal=10; % seconds
+detT=0.02; % seconds
+K=round(Ttotal/detT)+1; % K=501
+
+
+
+
+% -------------------boundary conditions-------------------
+BCy=[0,10 10.001,19.999,20,30]; %BC for y
+BCl=[0,0,1,1,0,0];
+
+
+
+%-------------------conputational code-------------------
+for t=1:1:K
+    for j=1:1:N
+        for i=1:1:M
+            c(i,j,t)=0;
+        end
+    end
+end
+
+
+for j=11:1:21
+    c(1,j,1)=1;
+end
+
+for t=2:1:K
+    for i=2:1:(M-1)
+        for j=2:1:(N-1)
+            c(i,j,t)=c(i,j,t-1)-u*(c(i,j,t-1)-c(i-1,j,t-1))/detX*detT+D*(c(i+1,j,t-1)-2*c(i,j,t-1)+c(i-1,j,t-1))/detX/detX*detT+D*(c(i,j+1,t-1)-2*c(i,j,t-1)+c(i,j-1,t-1))/detY/detY*detT;
+        end
+    end
+end
+%c(i,j,t+1)=c(i,j,t)-u*(c(i,j,t)-c(i-1,j,t))/detX*detT+D*(c(i+1,j,t)-2*c(i,j,t)+c(i-1,j,t))/detX/detX+D*(c(i,j+1,t)-2*c(i,j,t)+c(i,j-1,t))/detY/detY;
+% polutant of concentration
+
+
+%----------------------plot----------------------
+
+
+[x,y]=meshgrid(1:1:33);
+% distancex=linspace(1:1:33);
+% distancey=linspace(1:1:31);
+mesh(c(:,:,150))
+hold on;
+xlabel('x')
+ylabel('y')
+zlabel('Concentration')
