@@ -1,0 +1,113 @@
+%EXERCISE 2 – Muskingum-Cunge Method
+
+clear all
+clc
+
+load Hydrograph.txt;
+Q=Hydrograph;    %%Upstream hydrograph
+
+dx=2000;%m
+dt=3600;
+B=50; %width of the water at the top of the cross section(m),equivalent to Q0.
+Sf=0.01;
+c=0.1;%kinematic wave speed(m/s)
+
+K=dx/c;% storage constant(h)
+
+%Preallocations
+T1=zeros(length(Q),1);
+T2=zeros(length(Q),1);
+T3=zeros(length(Q),1);
+Q_out1=zeros(length(Q),1);
+Q_out2=zeros(length(Q),1);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METHOD 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+for n=1:length(Q)
+    Q(n,1)
+    if n==1
+        Q_out1(n,1)=Q(n,1);
+    else n>1
+        %X(n,1)=Xc;
+        X(n,1)=0.5*(1-Q_out1(n-1,1)/(c*B*Sf*dx));
+        C1(n,1)=(dt-2*K*X(n,1))/(2*K*(1-X(n,1))+dt);
+        C2(n,1)=(dt+2*K*X(n,1))/(2*K*(1-X(n,1))+dt);
+        C3(n,1)=(2*K*(1-X(n,1))-dt)/(2*K*(1-X(n,1))+dt);
+        T1(n,1)=C1(n,1)*Q(n,1);% term 1
+        T2(n,1)=C2(n,1)*Q(n-1,1);% term 2
+        T3(n,1)=C3(n,1)*Q_out1(n-1,1);% term 3
+        Q_out1(n,1)=T1(n,1)+T2(n,1)+T3(n,1);
+    end
+end
+    
+figure
+plot(Q,'k--')
+hold on
+plot(Q_out1,'r')
+title('Muskingum-cunge hydrograph')
+xlabel('ntime')
+ylabel('Q')
+legend('Inflow','Outflow')
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METHOD 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Q_out2(1,1)=Q(1,1);
+for n=1:length(Q)-1
+    X(n+1,1)=0.5*(1-Q_out2(n,1)/(c*B*Sf*dx));
+    C1(n+1,1)=(dt-2*K*X(n+1,1))/(2*K*(1-X(n+1,1))+dt);
+    C2(n+1,1)=(dt+2*K*X(n+1,1))/(2*K*(1-X(n+1,1))+dt);
+    C3(n+1,1)=(2*K*(1-X(n+1,1))-dt)/(2*K*(1-X(n+1,1))+dt);
+    T1(n+1,1)=C1(n+1,1)*Q(n+1,1);
+    T2(n+1,1)=C2(n+1,1)*Q(n,1);
+    T3(n+1,1)=C3(n+1,1)*Q_out2(n,1);
+    Q_out2(n+1,1)=T1(n+1,1)+T2(n+1,1)+T3(n+1,1);
+end
+
+figure
+plot(Q,'k--')
+hold on
+plot(Q_out2,'r')
+title('Muskingum-cunge hydrograph2')
+xlabel('ntime')
+ylabel('Q')
+legend('Inflow','Outflow')
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%% SENSITIVITY ANALYSIS X %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+X_vec=[0.01 0.1 0.2 0.3 0.4 0.49]';
+ 
+for j=1:length(X_vec)
+Xc=X_vec(j,1);
+    for n=1:length(Q)
+        Q(n,1)
+        if n==1
+            Q_out1(n,1)=Q(n,1);
+        else n>1
+            X(n,1)=Xc;
+    %         X(n,1)=0.5*(1-Q_out1(n-1,1)/(c*B*Sf*dx));
+            C1(n,1)=(dt-2*K*X(n,1))/(2*K*(1-X(n,1))+dt);
+            C2(n,1)=(dt+2*K*X(n,1))/(2*K*(1-X(n,1))+dt);
+            C3(n,1)=(2*K*(1-X(n,1))-dt)/(2*K*(1-X(n,1))+dt);
+            T1(n,1)=C1(n,1)*Q(n,1);
+            T2(n,1)=C2(n,1)*Q(n-1,1);
+            T3(n,1)=C3(n,1)*Q_out1(n-1,1);
+            Q_out1(n,1)=T1(n,1)+T2(n,1)+T3(n,1);
+        end
+    end
+Qout_tot(:,j)=Q_out1(:,1);
+end
+    
+figure
+plot(Q,'k--')
+hold on
+plot(Qout_tot,'linewidth',2)
+title('Muskingum-cunge hydrograph sensitivity analysis')
+xlabel('ntime')
+ylabel('Q')
+legend('Inflow','Outflow when X=0.01','Outflow when X=0.1','Outflow when X=0.2','Outflow when X=0.3','Outflow when X=0.4','Outflow when X=0.49')
