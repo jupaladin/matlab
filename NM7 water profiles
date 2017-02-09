@@ -1,0 +1,117 @@
+
+clc;
+close all;
+clear all;
+ 
+% --------Input data-------
+timewaterprofile=[35 65];
+nrprofiles=2;
+ui=1; %initial velocity
+uf=0;
+hi=1.6;
+xr=400;
+xl=-400;
+ymax=200;
+
+%-----------Computational code---------
+tu=100; % total computation time in seconds 
+deltat=10;
+g=9.81;
+ntime=tu/deltat+1;
+tc(1)=0;
+u(1)=ui;
+rh(1)=hi;
+lh(1)=hi;
+c(1)=sqrt(g*hi);
+Jminus=u(1)-2*c(1);
+Jplus=u(1)+2*c(1);
+rcchar(1)=u(1)+c(1);
+lcchar(1)=u(1)-c(1);
+for i=2:ntime
+    tc(i)=(i-1)*deltat;
+    u(i)=ui*(tu-tc(i))/tu;
+    rc(i)=(-Jminus+u(i))/2;
+    lc(i)=(Jplus-u(i))/2;
+    rh(i)=(rc(i)^2)/g;
+    lh(i)=(lc(i)^2)/g;
+    rcchar(i)=u(i)+rc(i);
+    lcchar(i)=u(i)-lc(i);
+end;
+
+%Plots
+
+subplot(2,1,1);  %plot of all characteristic lines
+
+ for j=1: ntime
+         ylf(j)=xl/lcchar(j);
+         yrf(j)=xr/rcchar(j);
+ end;
+ 
+ for i=1:ntime
+         x(1,i)=xl;
+         y(1,i)=ylf(i);
+         x(2,i)=0;
+         y(2,i)=tc(i);
+         x(3,i)=xr;
+         y(3,i)=yrf(i);
+         plot(x(:,i),y(:,i),'LineWidth',2);
+         hold on;
+ end;
+ 
+ timeaxisx=[0 0];
+ timeaxisy=[0 ymax];
+ plot(timeaxisx, timeaxisy,'k-','LineWidth',3);
+ hold on;
+ 
+ ylim([0 ymax]);
+ xlim([xl xr]);
+ xlabel('Distance [m]','FontSize',10);
+ ylabel('Time [sec]','FontSize',10);
+ 
+ subplot(2,1,2)%Plot of water depth
+ 
+ haxisx=[0 0];
+ haxisy=[0 2*hi];
+ plot(haxisx, haxisy,'k-','LineWidth',3);
+ hold on;  
+    hinitialx=[xl xr];
+    hinitialy=[hi hi];
+    plot(hinitialx, hinitialy,'b:','LineWidth',2); 
+    hold on;
+          
+  for k=1:1:nrprofiles
+      tcp=timewaterprofile(k);
+      up=ui*(tu-tcp)/tu;
+      rcp=(-Jminus+up)/2;
+      lcp=(Jplus-up)/2;
+      rhp=(rcp^2)/g;
+      lhp=(lcp^2)/g;
+      % no of intersected characteristics
+      no_i_char=fix(timewaterprofile(k)/deltat)+1;
+      lhx(1)=xl;lhy(1)=hi;
+      rhx(1)=xr;rhy(1)=hi;
+      lhx(2)=timewaterprofile(k)*lcchar(1);
+      lhy(2)=hi; 
+      for np=2:1:no_i_char
+          lhx(np)=timewaterprofile(k)*lcchar(np-1);
+          lhy(np)=lh(np-1);
+          rhx(np)=timewaterprofile(k)*rcchar(np-1);
+          rhy(np)=rh(np-1);         
+          end;
+          rhx(no_i_char+1)=0;
+          rhy(no_i_char+1)=rhp;
+          lhx(no_i_char+1)=0; 
+          lhy(no_i_char+1)=lhp;
+          watersurface=plot(lhx, lhy,'b-',rhx, rhy,'b-','LineWidth',1.5);
+         
+  end;
+    
+    xlabel('Distance [m]','FontSize',10);
+    ylabel('Water Depth [m]','FontSize',10);
+    xlim([xl xr]);
+    ylim([0 2*hi]);   
+                
+
+ 
+ 
+ 
