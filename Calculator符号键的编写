@@ -1,0 +1,75 @@
+function pushbutton_Callback(hObject, eventdata, handles)
+textString = get(handles.text1,'String');
+textString =strcat(textString,'÷');
+set(handles.text1,'String',textString)
+strcat的作用是将两个字符串连接起来，就是在已输入的存储数据textString后添加“÷”进行运算。
+然后执行set(handles.text1,'String',textString)。
+
+
+
+
+
+课堂范例：
+function pushbutton16_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton16 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global a flag
+if isempty(a)
+    %store the display value in a temporal variable a
+    a = str2double(get(handles.edit1,'string'))
+    %clear content of display
+    set(handles.edit1,'string','')
+    flag = 'p'
+else
+    b = str2double(get(handles.edit1,'string'))
+    %display sum result in edit box 1
+    set(handles.edit1,'string',num2str(a+b))
+    a=[];
+end
+
+
+
+
+
+
+
+
+
+按键“清空”的编写
+set(handles.text1,'String','')
+
+
+运算符“=”的编写
+textString = get(handles.text1,'String'); 
+ans =eval(textString); 
+“eval”的作用是将符号表达式转换成数值表达式。 
+再由set(handles.text1,'String',ans)输出。
+
+课堂范例：
+function pushbutton18_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton18 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global a flag
+b = str2double(get(handles.edit1,'string'))
+if flag=='p'
+    set(handles.edit1,'string',num2str(a+b))
+elseif flag=='m'
+    set(handles.edit1,'string',num2str(a-b))
+elseif flag=='multiply'
+    set(handles.edit1,'string',num2str(a*b))
+elseif flag=='divide'
+    set(handles.edit1,'string',num2str(a/b))
+elseif flag=='square'
+    set(handles.edit1,'string',num2str(a*a))    
+elseif flag=='cube'
+    set(handles.edit1,'string',num2str(a*a*a))    
+end
+
+
+
+
+
+
+
