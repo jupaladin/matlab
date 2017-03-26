@@ -1,0 +1,27 @@
+function pushbutton1_Callback(hObject, eventdata, handles） 
+textString = get(handles.text1,'String'); 
+textString =strcat(textString,'0'); 
+set(handles.text1,'String',textString) 
+这是使用句柄handles指向对象text1，并以字符串形式来存储数据文本框text1的内容，并存储数个“0”， 
+然后由set(handles.text1,'String','textString'在text1中输出。 
+同理，分别在function pushbutton2~10_Callback(hObject, eventdata, handles）下给1~9数字按键下编写此类程序。
+
+
+
+课堂范本:
+function pushbutton7_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+pushme(hObject,handles)
+
+
+调用pushme函数
+function handles=pushme(hObject,handles)
+%read from what is in the edit box
+av=get(handles.edit1,'string')
+%add actual value
+nv=[av,get(hObject,'string')]
+%write new value in the edit box
+set(handles.edit1,'string',nv)
+
